@@ -53,6 +53,7 @@
         board = new int[size][size];
         tempBoard = new int[size][size];
         frame = new JFrame("Game of Life");
+        frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
      }
     
@@ -63,12 +64,15 @@
     */
     private void InitBoard(int size)
     {   
-        for (int x = 0; x < size; x++) {
+        for (int x = 0; x < size; x++) 
+        {
             for (int y = 0; y < size; y++) 
             {
               board[x][y] = lifeStatus.nextInt(2);
+              
             }
-          }
+        }
+        
     }
 
     /* life status of specific cell in board checker*/
@@ -96,20 +100,21 @@
      {
         InitBoard(size);
         frame.setLayout(new GridLayout(size,size));
-        for (int i = 0; i < size*size; i++) {
-            JPanel pixel = new JPanel();
-            int x = pixel.getX();
-            int y = pixel.getY();
-
-            pixel.setBackground(colorCell(x,y));
-
-
-            frame.add(pixel);
+        for (int x = 0; x < size; x++) 
+        {
+            for(int y = 0; y < size; y++)
+            {
+                JPanel pixel = new JPanel();
+                //pixel.setSize(100,100);
+                pixel.setBackground(colorCell(x,y));
+                frame.add(pixel);
+            }
+            
         }
         //add pixels to frame
 
         
-        frame.setSize(500, 500);
+        frame.setSize(600,600);
         frame.setVisible(true);
      }
  
@@ -117,10 +122,9 @@
      // must provide grid size (x & y) and level of magnification (m)
      public static void main(String[] args)
      {
-
         Sim375 window = new Sim375();
+        //System.out.println(window.lifeStatus(100,100)); 
         window.displayBoard();
-         
      }
  }
  
