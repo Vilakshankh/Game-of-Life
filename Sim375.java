@@ -1,20 +1,6 @@
 
-/******************************************************************************
- *  Compilation:  javac *.java
- *  Execution:    java PictureDemo x y m
- *  Dependencies: Picture.java
- *
- *  Simple demo of how you can use the Picture class for graphical output
- *
- *  In this demo an x-by-y grid of cells will be drawn in random colours, to level of magnification m
- *
- *  m represents the number of screen pixels per cell
- *
- *  DOE221209.1934
- ******************************************************************************/
-
- import java.awt.*;
- import java.util.Random;
+import java.awt.*;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import javax.swing.*;
@@ -24,30 +10,43 @@ import java.awt.event.ActionListener;
 
  public class Sim375
  {
-    private int size = 120;           
-    private int[][] board;      
-    private int[][] tempBoard;  
-    private JFrame frame; 
-    private int alive = 1;
-    private int dead = 0;
-    private int [] iterationCount = {0};
-    static int delay = 50;
-
-    private Random alive_dead = new Random();
+    private int size = 120;                                     //size of grid
+    //private  int iterations;
+    //public char pattern;
     
-    // add parameteres: int iterations, char pattern
+
+    private int[][] board;                                      //initialize boards
+    private int[][] tempBoard;
+    
+
+    private JFrame frame;                                       //GUI elements
+
+
+    private int alive = 1;                                      //initialize life status variables
+    private Random alive_dead = new Random();
+
+    private int [] iterationCount = {0};                        //time between iteration variables
+    static int delay = 10;
+
+
+
+
+    
+    
     public Sim375()
     {
         //this.pattern = pattern;
-        //Sthis.iterations = iterations;
+
         board = new int[size][size];
         tempBoard = new int[size][size];
+
         frame = new JFrame("Game of Life");
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
-
-        InitBoard(size, 'L');
         frame.setLayout(new GridLayout(size,size));
+
+
+        InitBoard(size, 'R');
     }
 
      
@@ -172,16 +171,14 @@ import java.awt.event.ActionListener;
             for (int y = 0; y < size; y++)
             {
                 int aliveNeighbors = getNeighbors(x, y);
-                if (board[x][y] == alive)
-                {
-                    if(aliveNeighbors < 2 || aliveNeighbors > 3){ tempBoard[x][y] = dead;}
-                    else{tempBoard[x][y] = alive;}
-                }
-                else
-                {
-                    if (aliveNeighbors == 3) {tempBoard[x][y] = alive;}
-                    else{tempBoard[x][y] = dead;}
-                }
+                if      ((board[x][y] == 1) && (aliveNeighbors <  2)) 
+                        tempBoard[x][y] = 0;
+                else if ((board[x][y] == 1) && (aliveNeighbors >  3)) 
+                        tempBoard[x][y] = 0;
+                else if ((board[x][y] == 0) && (aliveNeighbors == 3)) 
+                        tempBoard[x][y] = 1;
+                else tempBoard[x][y] = board[x][y];
+
             }
         }
 
@@ -195,31 +192,32 @@ import java.awt.event.ActionListener;
     public void displayBoard()
     {
         
+       
         for (int x = 0; x < size; x++) 
         {
             for(int y = 0; y < size; y++)
             {
                 JPanel pixel = new JPanel();
-                //pixel.setSize(100,100);
+                
                 pixel.setBackground(getCellColor(x,y));
+                pixel.setSize(10,10);
                 frame.add(pixel);
+
             }
         }
-        frame.setSize(600,600);
+        frame.setSize(700,700);
         frame.setVisible(true);
     }
 
 
     public void startAnimation(int iterations)
     {
-                // start animation
-        
         Timer timer = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (iterationCount[0] < iterations) {
                     update();
-                    
+                    frame.getContentPane().removeAll();
                     displayBoard();
                     iterationCount[0]++;
                 } else {
@@ -233,12 +231,16 @@ import java.awt.event.ActionListener;
     }
  
 
-     // must provide grid size (x & y) and level of magnification (m)
      public static void main(String[] args)
      {
+        /*
+         * int iterations = Integer.parseInt(args[0]);
+        String inputPattern = args[1];
+        
+        char pattern = inputPattern.charAt(0);
+        */
+
         Sim375 window = new Sim375();
-        //System.out.println(window.lifeStatus(100,100)); 
-        //window.displayBoard();
         window.startAnimation(500);
      }
  }
