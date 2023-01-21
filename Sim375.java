@@ -18,6 +18,8 @@
 import java.util.stream.IntStream;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
  public class Sim375
@@ -28,19 +30,24 @@ import javax.swing.*;
     private JFrame frame; 
     private int alive = 1;
     private int dead = 0;
-    private int iterations;
+    private int [] iterationCount = {0};
+    static int delay = 50;
+
     private Random alive_dead = new Random();
     
     // add parameteres: int iterations, char pattern
     public Sim375()
     {
         //this.pattern = pattern;
-        //this.iterations = iterations;
+        //Sthis.iterations = iterations;
         board = new int[size][size];
-        nextBoard = new int[size][size];
+        tempBoard = new int[size][size];
         frame = new JFrame("Game of Life");
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+
+        InitBoard(size, 'L');
+        frame.setLayout(new GridLayout(size,size));
     }
 
      
@@ -133,7 +140,7 @@ import javax.swing.*;
                 {
                     int x_coord = (x + i + size) % size;
                     int y_coord = (y + j + size) % size;
-                    if (getLifeStatus(x, y)){aliveNeighbors++;}
+                    if (getLifeStatus(x_coord, y_coord)==1){aliveNeighbors++;}
                 }
             }
         }
@@ -179,6 +186,7 @@ import javax.swing.*;
         }
 
         for(int i = 0; i < size; i++) {System.arraycopy(tempBoard[i], 0, board[i], 0, size);}
+        
     }
 
 
@@ -186,8 +194,7 @@ import javax.swing.*;
 
     public void displayBoard()
     {
-        InitBoard(size, 'L');
-        frame.setLayout(new GridLayout(size,size));
+        
         for (int x = 0; x < size; x++) 
         {
             for(int y = 0; y < size; y++)
@@ -201,6 +208,29 @@ import javax.swing.*;
         frame.setSize(600,600);
         frame.setVisible(true);
     }
+
+
+    public void startAnimation(int iterations)
+    {
+                // start animation
+        
+        Timer timer = new Timer(delay, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (iterationCount[0] < iterations) {
+                    update();
+                    
+                    displayBoard();
+                    iterationCount[0]++;
+                } else {
+
+                    ((Timer) e.getSource()).stop();
+
+                }
+            }
+        });
+        timer.start();
+    }
  
 
      // must provide grid size (x & y) and level of magnification (m)
@@ -208,7 +238,8 @@ import javax.swing.*;
      {
         Sim375 window = new Sim375();
         //System.out.println(window.lifeStatus(100,100)); 
-        window.displayBoard();
+        //window.displayBoard();
+        window.startAnimation(500);
      }
  }
  
