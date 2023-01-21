@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
  {
     private int size = 120;                                     //size of grid
     //private  int iterations;
-    //public char pattern;
+    public char pattern;
     
 
     private int[][] board;                                      //initialize boards
@@ -33,26 +33,26 @@ import java.awt.event.ActionListener;
 
     
     
-    public Sim375()
+    public Sim375(char pattern)
     {
-        //this.pattern = pattern;
+        this.pattern = pattern;
 
         board = new int[size][size];
         tempBoard = new int[size][size];
 
-        frame = new JFrame("Game of Life");
+        frame = new JFrame("Game of Life");                             //create GUI frame
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         frame.setLayout(new GridLayout(size,size));
 
 
-        InitBoard(size, 'R');
+        InitBoard(size, pattern);
     }
 
      
     private void InitBoard(int size, char pattern)
     {   
-        if (pattern == 'R')
+        if (pattern == 'R')                                                                                     //Random pattern
         {
             for (int x = 0; x < size; x++) 
             {
@@ -60,7 +60,7 @@ import java.awt.event.ActionListener;
             } 
         }
     
-        if (pattern == 'T')
+        if (pattern == 'T')                                                                                     //Tumbler pattern
         {
             for (int x = 0; x < size; x++) 
             {
@@ -89,7 +89,7 @@ import java.awt.event.ActionListener;
             board[5][7] = 1;
         }
 
-        if (pattern == 'L')
+        if (pattern == 'L')                                                                                     //Loafer pattern
         {
             for (int x = 0; x < size; x++) 
             {
@@ -128,6 +128,12 @@ import java.awt.event.ActionListener;
 
     }
 
+
+
+    
+
+
+    // Get total number of alive neighbors
     private int getNeighbors(int x, int y)
     {
         int aliveNeighbors = 0;
@@ -137,46 +143,64 @@ import java.awt.event.ActionListener;
             {
                 if (!(i == 0 && j == 0))
                 {
-                    int x_coord = (x + i + size) % size;
-                    int y_coord = (y + j + size) % size;
-                    if (getLifeStatus(x_coord, y_coord)==1){aliveNeighbors++;}
+                    int xValue = (x + i + size) % size;
+                    int yValue = (y + j + size) % size;
+                    if (getLifeStatus(xValue, yValue)==1){aliveNeighbors++;}
                 }
             }
         }
         return aliveNeighbors;
     }
 
+
+
+
+    // Get life status of particular cell
     private int getLifeStatus(int x, int y)
     {
         if (board[x][y] == alive) {return 1;}
         else {return 0;}
     }
 
+
+
+
+    // Get color of particular cell depending on its life status
     private Color getCellColor(int x, int y)
     {
         Color CAlive = new Color(0,0,0);
         Color CDead = new Color(255,255,255);
         
     
-        // set() colours an individual pixel
+                                                                                                                // set() colours an individual pixel
         if(getLifeStatus(x,y) == 1){return CAlive;}
         else  {return CDead;}
     }
 
 
-    private void update()
+
+
+
+    // Implements rules of life to cells and updates board
+    private void createNewBoard()
     {
         for (int x = 0; x < size; x++)
         {
             for (int y = 0; y < size; y++)
             {
                 int aliveNeighbors = getNeighbors(x, y);
+
+
+                //Rules of life
                 if      ((board[x][y] == 1) && (aliveNeighbors <  2)) 
                         tempBoard[x][y] = 0;
+
                 else if ((board[x][y] == 1) && (aliveNeighbors >  3)) 
                         tempBoard[x][y] = 0;
+
                 else if ((board[x][y] == 0) && (aliveNeighbors == 3)) 
                         tempBoard[x][y] = 1;
+
                 else tempBoard[x][y] = board[x][y];
 
             }
@@ -188,18 +212,17 @@ import java.awt.event.ActionListener;
 
 
     
-
+    // Renders GUI with all cells depending on their life status
     public void displayBoard()
     {
-        
-       
         for (int x = 0; x < size; x++) 
         {
             for(int y = 0; y < size; y++)
             {
+
                 JPanel pixel = new JPanel();
-                
-                pixel.setBackground(getCellColor(x,y));
+
+                pixel.setBackground(getCellColor(x,y));                                                         // Create cell properties and add to GUI frame
                 pixel.setSize(10,10);
                 frame.add(pixel);
 
@@ -209,14 +232,16 @@ import java.awt.event.ActionListener;
         frame.setVisible(true);
     }
 
+    
 
+    // Each iteration, new board is rendered with timed delay 
     public void startAnimation(int iterations)
     {
         Timer timer = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (iterationCount[0] < iterations) {
-                    update();
+                    createNewBoard();
                     frame.getContentPane().removeAll();
                     displayBoard();
                     iterationCount[0]++;
@@ -233,15 +258,16 @@ import java.awt.event.ActionListener;
 
      public static void main(String[] args)
      {
-        /*
-         * int iterations = Integer.parseInt(args[0]);
+        
+        // Take in console input
+        int iterations = Integer.parseInt(args[0]);
         String inputPattern = args[1];
         
         char pattern = inputPattern.charAt(0);
-        */
+        
 
-        Sim375 window = new Sim375();
-        window.startAnimation(500);
+        Sim375 window = new Sim375(pattern);
+        window.startAnimation(iterations);
      }
  }
  
