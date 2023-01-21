@@ -24,16 +24,16 @@ import java.awt.event.ActionListener;
 
  public class Sim375
  {
-    private int size = 120;           
-    private int[][] board;      
-    private int[][] tempBoard;  
-    private JFrame frame; 
-    private int alive = 1;
-    private int dead = 0;
-    private int [] iterationCount = {0};
-    static int delay = 50;
+    private static int size = 120;           
+    private static int[][] board;      
+    private static int[][] tempBoard;  
+    
+    private static int alive = 1;
+    private static int dead = 0;
+    static final int [] iterationCount = {0};
+    static int delay = 250;
 
-    private Random alive_dead = new Random();
+    private static Random alive_dead = new Random();
     
     // add parameteres: int iterations, char pattern
     public Sim375()
@@ -42,16 +42,16 @@ import java.awt.event.ActionListener;
         //Sthis.iterations = iterations;
         board = new int[size][size];
         tempBoard = new int[size][size];
-        frame = new JFrame("Game of Life");
-        frame.setResizable(false);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+
+
+
 
         InitBoard(size, 'L');
-        frame.setLayout(new GridLayout(size,size));
+        
     }
 
      
-    private void InitBoard(int size, char pattern)
+    private static void InitBoard(int size, char pattern)
     {   
         if (pattern == 'R')
         {
@@ -129,7 +129,7 @@ import java.awt.event.ActionListener;
 
     }
 
-    private int getNeighbors(int x, int y)
+    private static int getNeighbors(int x, int y)
     {
         int aliveNeighbors = 0;
         for (int i = -1; i<=1; i++)
@@ -147,13 +147,13 @@ import java.awt.event.ActionListener;
         return aliveNeighbors;
     }
 
-    private int getLifeStatus(int x, int y)
+    private static int getLifeStatus(int x, int y)
     {
         if (board[x][y] == alive) {return 1;}
         else {return 0;}
     }
 
-    private Color getCellColor(int x, int y)
+    private static Color getCellColor(int x, int y)
     {
         Color CAlive = new Color(0,0,0);
         Color CDead = new Color(255,255,255);
@@ -165,7 +165,7 @@ import java.awt.event.ActionListener;
     }
 
 
-    private void update()
+    private static void update()
     {
         for (int x = 0; x < size; x++)
         {
@@ -192,35 +192,68 @@ import java.awt.event.ActionListener;
 
     
 
-    public void displayBoard()
-    {
+
+
+    
+
+     // must provide grid size (x & y) and level of magnification (m)
+     public static void main(String[] args)
+     {
+        //Sim375 window = new Sim375();
+        int size = 120;
+        //System.out.println(window.lifeStatus(100,100)); 
+        //window.displayBoard();
         
-        for (int x = 0; x < size; x++) 
+        JFrame frame = new JFrame("Game of Life");
+        frame.setLayout(new GridLayout(size,size));
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+
+
+        JPanel pixel = new JPanel()
         {
-            for(int y = 0; y < size; y++)
+            @Override
+            public void paintComponent(Graphics g) 
             {
-                JPanel pixel = new JPanel();
-                //pixel.setSize(100,100);
-                pixel.setBackground(getCellColor(x,y));
-                frame.add(pixel);
+                super.paintComponent(g);
+                for (int i = 0; i < size; i++) 
+                {
+                    for (int j = 0; j < size; j++) 
+                    {
+                        if(getLifeStatus(i,j) == 1)
+                        {
+                            g.setColor(Color.BLACK);
+                        }
+                        else
+                        {
+                            g.setColor(Color.WHITE);
+                        }
+                        g.fillRect(i * 4, j * 4, 4, 4);
+                    }
+                }
             }
-        }
-        frame.setSize(600,600);
-        frame.setVisible(true);
-    }
-
-
-    public void startAnimation(int iterations)
-    {
-                // start animation
+        };
         
+        pixel.setPreferredSize(new Dimension(size * 4, size * 4));
+        frame.add(pixel);
+        frame.pack();
+        frame.setVisible(true);
+
+
+
+
+
+
+
+                        // start animation
+        int iterations = 0;
         Timer timer = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (iterationCount[0] < iterations) {
                     update();
                     
-                    displayBoard();
+                    pixel.repaint();
                     iterationCount[0]++;
                 } else {
 
@@ -230,16 +263,10 @@ import java.awt.event.ActionListener;
             }
         });
         timer.start();
-    }
- 
+    
 
-     // must provide grid size (x & y) and level of magnification (m)
-     public static void main(String[] args)
-     {
-        Sim375 window = new Sim375();
-        //System.out.println(window.lifeStatus(100,100)); 
-        //window.displayBoard();
-        window.startAnimation(500);
+
+
      }
  }
  
